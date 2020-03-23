@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <title>神経衰弱</title>
+    <style>
+        body{
+            width:923px;
+            display:flex;
+            flex-wrap:wrap;
+            width:;
+            background:skyblue;
+        }
+        .card{
+            width:63px;
+            height:88px;
+            background:black;
+            cursor:pointer;
+            margin:0 8px 8px 0;
+            text-align:center;
+            line-height:89px;
+        }
+        .omote{
+            background:white;
+        }
+        .pare{
+            transform:scale(0);
+        }
+        .rule{
+            flex-wrap:nowrap;
+        }
+    </style>
+</head>
+<body onload="answer()">
+    <script>
+        var x = 52, f = 0, n = 13, arr = [];
+        for (i = 0; i < 52; i++) {
+            arr[i] = Math.floor(Math.random() * 52);
+            for (j = 0; j < i; j++)
+                if (arr[i] == arr[j])
+                    i--;
+        }
+        for (let i = 0; i < 52; i++) {
+            const div = document.createElement('div');
+            div.classList.add('card');
+            switch (arr[i] % 13) {
+                case 0: div.textContent = 'K'; break;
+                case 1: div.textContent = 'A'; break;
+                case 11: div.textContent = 'J'; break;
+                case 12: div.textContent = 'Q'; break;
+                default: div.textContent = arr[i] % 13;
+            }
+            div.addEventListener('click', () => {
+                if (x != i && f == 0) {
+                    f = 1;
+                    div.classList.add('omote');
+                    if (n == 13) {
+                        x = i;
+                        f = 0;
+                        n = arr[i] % 13;
+                    } else {
+                        const divf = document.body.childNodes[x + 2];
+                        if (n == arr[i] % 13) {
+                            var score = parseInt(document.score.elements[1].value) - 1;
+                            document.score.elements[1].value = score;
+                            div.classList.add('pare');
+                            divf.classList.add('pare');
+                            f = 0;
+                        } else {
+                            var miss = parseInt(document.score.elements[0].value) + 1;
+                            document.score.elements[0].value = miss;
+                            setTimeout(() => {
+                                div.classList.remove('omote');
+                                divf.classList.remove('omote');
+                                f = 0;
+                            },
+                                1000)
+                        }
+                        x = 52;
+                        n = 13;
+                    }
+                }
+            });
+            document.body.appendChild(div);
+        }
+        setInterval(() => {
+            var score = parseInt(document.score.elements[1].value)
+            if (score <= 0) {
+                var miss = parseInt(document.score.elements[0].value);
+                alert("おめでとうございます！ミスした回数は" + miss + "でした。");
+                window.location.reload();
+            }
+        },
+            1000)
+        function answer() {
+            var score = parseInt(document.score.elements[0].value) + 5;
+            document.score.elements[0].value = score;
+            f = 1;
+            for (let i = 0; i < 52; i++) {
+                const div = document.body.childNodes[i + 2];
+                div.classList.add('omote');
+            }
+            setTimeout(() => {
+                for (let i = 0; i < 52; i++) {
+                    const div = document.body.childNodes[i + 2];
+                    div.classList.remove('omote');
+                }
+                f = 0;
+            },
+                5000)
+        }
+    </script>
+    <form name="score">
+        ミス<input type="text" value="-5" readonly>回
+        残り<input type="text" value="26" readonly>ペア
+        <input type="button" value="答え" onclick="answer()">
+        <input type="button" value="リセット" onclick="window.location.reload()">
+    </form>
+    <div class="rule">
+    <h1>ルール</h1>
+    <p>①最初に5秒の記憶時間が与えられます。</p>
+    <p>②2枚めくり、同じ数字であればペアとして取れ、違う数字だと1秒後に裏に戻ります。</p>
+    <p>③答えを押すと再び5秒の記憶時間が与えられます。ただしミスに5回分のペナルティが加わります。</p>
+    <p>④見事全てのカードを取り切るとゲームクリアです！</p>
+    </div>
+</body>
+</html>
